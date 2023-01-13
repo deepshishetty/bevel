@@ -242,6 +242,18 @@ spec:
         - name: {{ $.Values.peer.name }}-msp-config-volume
           mountPath: /etc/hyperledger/fabric/NodeOUconfig
           readOnly: true
+        - mountPath: /etc/hyperledger/fabric/core.yaml  
+          name: builders-config 
+          subPath: core.yaml    
+        - mountPath: /builders/external/bin/detect  
+          name: external-builder-detect 
+          subPath: detect   
+        - mountPath: /builders/external/bin/build   
+          name: external-builder-build  
+          subPath: build    
+        - mountPath: /builders/external/bin/release 
+          name: external-builder-release    
+          subPath: release
         resources:
           requests:
             memory: {{ .Values.config.pod.resources.requests.memory }}
@@ -296,6 +308,33 @@ spec:
       - name: dockersocket
         hostPath:
           path: /var/run/docker.sock
+      - name: builders-config   
+        configMap:  
+          name: builders-config 
+          items:    
+            - key: core.yaml    
+              path: core.yaml   
+      - name: external-builder-detect   
+        configMap:  
+          name: builders-config 
+          items:    
+            - key: detect   
+              path: detect  
+              mode: 0544    
+      - name: external-builder-release  
+        configMap:  
+          name: builders-config 
+          items:    
+            - key: release  
+              path: release 
+              mode: 0544
+      - name: external-builder-build    
+        configMap:  
+          name: builders-config 
+          items:    
+            - key: build    
+              path: build   
+              mode: 0544    
       - name: {{ $.Values.peer.name }}-msp-config-volume
         configMap:
           name: {{ $.Values.peer.name }}-msp-config
